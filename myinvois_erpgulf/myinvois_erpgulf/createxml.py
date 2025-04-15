@@ -354,9 +354,12 @@ def company_data(invoice, sales_invoice_doc):
         cont_ct = ET.SubElement(party_, "cac:Contact")
 
         phone = address.get("phone")
-        addr = address.get("email_id")
         ET.SubElement(cont_ct, "cbc:Telephone").text = phone if not is_na(phone) else 60100000000
-        ET.SubElement(cont_ct, "cbc:ElectronicMail").text = addr if not is_na(addr) else "noemail@noemail.com"
+
+        email = address.get("email_id")
+        if is_na(email) or not is_valid_email(email): 
+            email = "noemail@noemail.com"
+        ET.SubElement(cont_ct, "cbc:ElectronicMail").text = email
 
         return invoice
 
@@ -372,6 +375,11 @@ def company_data(invoice, sales_invoice_doc):
 # Function to check for N/A variations
 def is_na(value):
     return value is None or str(value).strip().lower() in ['n/a', 'na', '']
+
+# Function to validate email format
+def is_valid_email(email):
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(email_regex, email) is not None
 
 # def company_data(invoice, sales_invoice_doc):
 #     """Adds the Company data to the invoice"""
