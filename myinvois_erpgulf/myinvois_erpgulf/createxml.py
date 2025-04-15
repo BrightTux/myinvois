@@ -352,10 +352,11 @@ def company_data(invoice, sales_invoice_doc):
 
         # Contact Information
         cont_ct = ET.SubElement(party_, "cac:Contact")
-        if address.get("phone"):
-            ET.SubElement(cont_ct, "cbc:Telephone").text = address.phone
-        if address.get("email_id"):
-            ET.SubElement(cont_ct, "cbc:ElectronicMail").text = address.email_id
+
+        phone = address.get("phone")
+        addr = address.get("email_id")
+        ET.SubElement(cont_ct, "cbc:Telephone").text = phone if not is_na(phone) else 60100000000
+        ET.SubElement(cont_ct, "cbc:ElectronicMail").text = addr if not is_na(addr) else "noemail@noemail.com"
 
         return invoice
 
@@ -368,6 +369,9 @@ def company_data(invoice, sales_invoice_doc):
         frappe.throw(f"Error in company data generation: {str(e)}")
         return None
 
+# Function to check for N/A variations
+def is_na(value):
+    return value is None or str(value).strip().lower() in ['n/a', 'na', '']
 
 # def company_data(invoice, sales_invoice_doc):
 #     """Adds the Company data to the invoice"""
